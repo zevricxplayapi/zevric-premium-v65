@@ -90,41 +90,17 @@ def dec(d):
     except:
         return AES.new(key, AES.MODE_CBC, iv).decrypt(d)
 
-def build_majorlogin(tok, open_id, p_type):
-    m = MajorLogin()
-    m.event_time = str(datetime.now())[:-7]
-    m.game_name = "free fire"
-    m.platform_id = p_type
-    m.client_version = "1.120.1"
-    m.system_software = "Android OS 9 / API-28"
-    m.system_hardware = "Handheld"
-    m.telecom_operator = "Verizon"
-    m.network_type = "WIFI"
-    m.screen_width = 1920
-    m.screen_height = 1080
-    m.screen_dpi = "280"
-    m.processor_details = "ARM64 FP ASIMD AES VMH | 2865 | 4"
-    m.memory = 3003
-    m.gpu_renderer = "Adreno (TM) 640"
-    m.gpu_version = "OpenGL ES 3.1 v1.46"
-    m.unique_device_id = "Google|34a7dcdf-a7d5-4cb6-8d7e-3b0e448a0c57"
-    m.client_ip = "223.191.51.89"
-    m.language = "en"
-    m.open_id = open_id
-    m.open_id_type = str(p_type)
-    m.device_type = "Handheld"
-    m.access_token = tok
-    m.platform_sdk_id = 1
-    m.client_using_version = "7428b253defc164018c604a1ebbfebdf"
-    m.login_by = 3
-    m.channel_type = 3
-    m.cpu_type = 2
-    m.cpu_architecture = "64"
-    m.client_version_code = "2019118695"
-    m.login_open_id_type = p_type
-    m.origin_platform_type = str(p_type)
-    m.primary_platform_type = str(p_type)
-    return enc(m.SerializeToString())
+mLhDr = {
+    "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 11; SM-S908E Build/TP1A.220624.014)",
+    "Connection": "Keep-Alive",
+    "Accept-Encoding": "gzip",
+    "Content-Type": "application/octet-stream",
+    "Expect": "100-continue",
+    "X-GA": "v1 1",
+    "X-Unity-Version": "2018.4.11f1",
+    "ReleaseVersion": "OB54"
+}
+
 
 def fetch_majorlogin_jwt(tok):
     if tok.startswith("ey") and "." in tok and len(tok) > 100:
