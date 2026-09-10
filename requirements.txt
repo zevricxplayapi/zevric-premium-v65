@@ -6,3 +6,5 @@ protobuf
 urllib3
 cloudscraper
 curl_cffi
+playwright
+playwright-stealth
