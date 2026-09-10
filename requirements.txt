@@ -1,0 +1,8 @@
+python-telegram-bot[job-queue]==20.8
+requests
+Flask
+pycryptodome
+protobuf
+urllib3
+cloudscraper
+curl_cffi
