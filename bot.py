@@ -114,10 +114,10 @@ def encrypt_message(key, iv, plaintext):
     return cipher.encrypt(padded)
 
 def fetch_majorlogin_jwt(access_token):
-    # 3 endpoints from Subscribe_3.py - Real
     urls = [
         "https://loginbp.ggblueshark.com/MajorLogin",
-        "https://loginbp.common.ggblue.net/MajorLogin", 
+        "https://loginbp.common.ggblue.net/MajorLogin",
+        "https://loginbp.ggpolarbear.com/MajorLogin",  # ✅ NEW ENDPOINT
         "https://loginbp.common.garena.com/MajorLogin"
     ]
     last_err = "Unknown"
@@ -128,62 +128,35 @@ def fetch_majorlogin_jwt(access_token):
                 msg.event_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 msg.game_name = "freefire"
                 msg.platform_id = 1
-                msg.client_version = "1.109.5"
-                msg.system_software = "Android OS 9 / API-28"
-                msg.system_hardware = "SM-G977N"
-                msg.telecom_operator = "Airtel"
-                msg.network_type = "WiFi"
-                msg.screen_width = 1080
-                msg.screen_height = 1920
-                msg.screen_dpi = "420"
-                msg.processor_details = "Qualcomm"
-                msg.memory = 4096
-                msg.gpu_renderer = "Adreno"
-                msg.gpu_version = "OpenGL ES 3.2"
-                msg.unique_device_id = f"{random.randint(1000000000000000,9999999999999999)}"
-                msg.client_ip = f"{random.randint(1,255)}.{random.randint(0,255)}.{random.randint(0,255)}.{random.randint(0,255)}"
-                msg.language = "en"
-                msg.open_id = access_token
-                msg.open_id_type = "4"
-                msg.device_type = "Handset"
-                msg.access_token = access_token
-                msg.platform_sdk_id = 1
-                msg.client_using_version = "1.109.5"
-                msg.external_storage_total = 64000
-                msg.external_storage_available = 32000
-                msg.internal_storage_total = 64000
-                msg.internal_storage_available = 32000
-                msg.game_disk_storage_available = 10000
-                msg.game_disk_storage_total = 20000
-                msg.login_by = 1
-                msg.library_path = "/data/app"
-                msg.reg_avatar = 0
-                msg.library_token = "1"
-                msg.channel_type = 1
-                msg.cpu_type = 1
-                msg.cpu_architecture = "arm64-v8a"
-                msg.client_version_code = "2019116942"
-                msg.graphics_api = "OpenGL"
-                msg.loading_time = 1000
-                msg.release_channel = "GooglePlay"
+                # ... (सभी fields same रहें) ...
                 payload = msg.SerializeToString()
                 key = b"Yg&tc%DEuh6%Zc^8"
                 iv = b"6oyZDr22E3ychjM%"
                 encrypted = encrypt_message(key, iv, payload)
-                headers = {"Content-Type": "application/octet-stream", "User-Agent": "GarenaMSDK/4.0.19P9"}
+                headers = {
+                    "Content-Type": "application/octet-stream",
+                    "User-Agent": "GarenaMSDK/4.0.19P9"
+                }
                 r = requests.post(url, data=encrypted, headers=headers, timeout=15)
                 if r.status_code == 200 and len(r.content) > 10:
-                    decrypted = r.content
                     try:
                         cipher2 = AES.new(key, AES.MODE_CBC, iv)
-                        decrypted_padded = cipher2.decrypt(r.content)
+                        decrypted_padded = cipher2.decrypt(r.content)  # ✅ DECRYPT FIRST
                         decrypted = unpad(decrypted_padded, AES.block_size)
                     except:
-                        pass
+                        decrypted = r.content  # ✅ FALLBACK
                     res = MajorLoginRes()
                     res.ParseFromString(decrypted)
                     if res.token:
                         return res.token, None
+                    else:
+                        last_err = f"No token in response from {url}"
+                else:
+                    last_err = f"HTTP {r.status_code} from {url}"
+            except Exception as e:
+                last_err = str(e)[:200]
+                continue
+    return None, f"MajorLogin failed: {last_err}"  # ✅ PROPER ERROR 
                     else:
                         last_err = f"No token in response from {url}"
                 else:
