@@ -188,12 +188,26 @@ def trigger_injection(jwt_token, version):
     return requests.post(API_URL, headers=headers, data=body, timeout=20, verify=False)
 
 def decode_ff_name(encoded_name):
+    """Properly decode FF nickname with XOR decryption"""
     try:
-        return base64.b64decode(encoded_name).decode('utf-8', errors='ignore')
+        if not encoded_name:
+            return "Unknown"
+        key = b"1e5898ccb8dfdd921f9bdea848768b64a201"
+        b64_str = encoded_name.strip()
+        b64_str += "=" * ((4 - len(b64_str) % 4) % 4)
+        encrypted_bytes = base64.b64decode(b64_str)
+        decrypted_bytes = bytearray()
+        for i, byte in enumerate(encrypted_bytes):
+            key_byte = key[i % len(key)]
+            if isinstance(key_byte, int):
+                decrypted_bytes.append(byte ^ key_byte)
+            else:
+                decrypted_bytes.append(byte ^ ord(key_byte))
+        name = decrypted_bytes.decode('utf-8', errors='ignore')
+        return name if name and name.strip() else "Unknown"
     except:
-        return encoded_name
-
-def generate_username(length=12):
+        return "Unknown"
+    def generate_username(length=12):
     letters = string.ascii_lowercase + string.digits
     return ''.join(random.choice(letters) for _ in range(length))
 
