@@ -78,13 +78,16 @@ def decode_ff_name(b64_str):
         return "Unknown"
 
 def enc(d):
-    key = b"Yg&tc%DEuh6%Zc^8"
-    iv = b"6oyZDr22E3ychjM%"
+    AeskEy = b"Yg&tc%DEuh6%Zc^8"
+    AeSiv = b"6oyZDr22E3ychjM%"
+    mLuRl = "https://loginbp.ggpolarbear.com/MajorLogin"
     return AES.new(key, AES.MODE_CBC, iv).encrypt(pad(d, 16))
 
 def dec(d):
-    key = b"Yg&tc%DEuh6%Zc^8"
-    iv = b"6oyZDr22E3ychjM%"
+    AeSkey = b"Yg&tc%DEuh6%Zc^8"
+    AeSiv = b"6oyZDr22E3ychjM%"
+    mLuRl = "https://loginbp.ggpolarbear.com/MajorLogin"
+    
     try:
         return unpad(AES.new(key, AES.MODE_CBC, iv).decrypt(d), 16)
     except:
