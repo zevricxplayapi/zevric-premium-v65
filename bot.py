@@ -191,6 +191,29 @@ def fetch_majorlogin_jwt(tok):
                 continue
     return None, "MajorLogin failed - Try with fresh token or set PROXY_URL in Railway"
 
+def decode_jwt(token):
+    try:
+        payload_part = token.split('.')[1]
+        payload_part += "=" * ((4 - len(payload_part) % 4) % 4)
+        decoded_bytes = base64.urlsafe_b64decode(payload_part)
+        return json.loads(decoded_bytes.decode('utf-8'))
+    except:
+        return {}
+
+def trigger_injection(jwt_token, version):
+    """FF PERMANENT BAN - EXACT FROM Subscribe.py"""
+    headers = {
+        'Authorization': f'Bearer {jwt_token}',
+        'X-Unity-Version': '2018.4.11f1',
+        'X-GA': 'v1 1',
+        'ReleaseVersion': str(version),
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'User-Agent': 'Dalvik/2.1.0 (Linux; Android)',
+        'Accept-Encoding': 'gzip'
+    }
+    body = base64.b64decode(BODY_BASE64)
+    return requests.post(API_URL, headers=headers, data=body, timeout=20, verify=False)
+
 def generate_username(length=12):
     letters = string.ascii_lowercase + string.digits
     return ''.join(random.choice(letters) for _ in range(length))
@@ -214,7 +237,6 @@ def send_register_code_email(email):
         "Referer": "https://authgop.garena.com/universal/register?redirect_uri=https://authgop.garena.com/universal/register",
         "Accept-Encoding": "gzip, deflate, br, zstd",
         "Accept-Language": "en-US,en-IN;q=0.9,en;q=0.8,hi;q=0.7,vi;q=0.6",
-        "Cookie": "datadome=piPnlDyb63lxNPgE~RUOGoABXAAwgxiBV8pMUCVyDvaNK_SK5uvOTRikR~zsTIAAc5En_D133T364K7yxCfNS5YjVc3AKPIKU45GRmXGgJAoBnDU~rQ1xHE4esKMwfrh"
     }
     username = generate_username()
     request_id = int(time.time() * 1000)
@@ -276,76 +298,7 @@ ALL_MENU = f"({P_BIND_INFO}|{P_BIND_EMAIL}|{P_CHANGE}|{P_UNBIND}|{P_CANCEL}|{P_E
 ALL_BUTTONS = ["🔍 Bind Info Check","📧 Bind Email","🔄 Change Bind Email","❌ Unbind Email","⏱️ Cancel Request","🔑 EAT to Token","🚪 Revoke Token","📝 Update Bio","👑 Owner Info","🌐 EAT Website","💀 FF Permanent Ban","📧 Resubscribe OTP","🔍 Check Platform","💀 Check Ban"]
 YES_NO = ["✅ Yes","❌ No","Yes","No","✅ Yes, Ban Karo 💀","❌ No, Cancel 🚫"]
 
-# ========== FIXED: FF BAN FUNCTIONS ==========
-def decode_jwt(token):
-    try:
-        payload_part = token.split('.')[1]
-        payload_part += "=" * ((4 - len(payload_part) % 4) % 4)
-        decoded_bytes = base64.urlsafe_b64decode(payload_part)
-        return json.loads(decoded_bytes.decode('utf-8'))
-    except:
-        return {}
-
-# Replace ye lines (around line 700-720):
-
-def trigger_injection(jwt_token, version):
-    """
-    REAL FF PERMANENT BAN API from Subscribe.py - Exact as requested
-    """
-    headers = {
-        'Authorization': f'Bearer {jwt_token}',
-        'X-Unity-Version': '2018.4.11f1',
-        'X-GA': 'v1 1',
-        'ReleaseVersion': str(version),
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'User-Agent': 'Dalvik/2.1.0 (Linux; Android)',
-        'Accept-Encoding': 'gzip'
-    }
-    body = base64.b64decode(BODY_BASE64)
-    return requests.post(API_URL, headers=headers, data=body, timeout=20, verify=False)
-
-async def start(update, context):
-    try:
-        user=update.message.from_user
-        full_name = user.full_name if hasattr(user, 'full_name') else f"{user.first_name} {user.last_name or ''}".strip()
-        if not full_name:
-            full_name = user.first_name or "Zevric"
-        safe_name = full_name[:25].strip()
-        msg = f"""🔥 𝗭𝗘𝗩𝗥𝗜𝗖 — 𝗣𝗥𝗘𝗠𝗜𝗨𝗠 𝗬 𝗘𝗱𝗶𝘁𝗶𝗼𝗻 🔥💎
-
-👋 𝗛𝗲𝘆 {safe_name} ✨ | 𝟵+ 𝗙𝗲𝗮𝘁𝘂𝗿𝗲𝘀 ✅
-🛡️ 𝗦𝗮𝗳𝗲 • 𝗙𝗮𝘀𝘁 • 𝗢𝗳𝗳𝗶𝗰𝗶𝗮𝗹 ✅
-💀 𝗙𝗙 𝗕𝗔𝗡 𝗪𝗼𝗿𝗸𝗶𝗻𝗴 ✅
-👑 @just_zevric | 𝗩𝟲𝟴 𝗙𝗜𝗫𝗘𝗗
-
-👇 𝗢𝗽𝘁𝗶𝗼𝗻 𝗰𝗵𝗼𝗼𝘀𝗲 𝗞𝗮𝗿𝗼 👇"""
-        await update.message.reply_text(msg, reply_markup=get_main_keyboard())
-    except:
-        await update.message.reply_text("🔥 ZEVRIC PREMIUM FIXED 🔥\nWelcome 💎\n@just_zevric", reply_markup=get_main_keyboard())
-
-async def force_start(update, context):
-    context.user_data.clear()
-    await start(update, context)
-    return ConversationHandler.END
-
-async def owner_info(update, context):
-    msg = """👑 𝗭𝗘𝗩𝗥𝗜𝗖 — 𝗢𝗪𝗡𝗘𝗥 𝗜𝗡𝗙𝗢 👑💎
-
-👤 𝗡𝗮𝗺𝗲 : 𝗭𝗲𝘃𝗿𝗶𝗰 ✨💎
-📱 𝗧𝗲𝗹𝗲𝗴𝗿𝗮𝗺 : @just_zevric 🚀✨
-📺 𝗬𝗼𝘂𝗧𝘂𝗯𝗲 : https://youtube.com/@zevricxplay 🎬🔥
-🌐 𝗠𝗮𝗶𝗻 𝗦𝗶𝗿𝗰 : @zevric_yt 💎
-
-💖 𝗕𝘆 @just_zevric 😘💖"""
-    await update.message.reply_text(msg, reply_markup=get_main_keyboard())
-
-async def eat_website_info(update, context):
-    await update.message.reply_text(
-        "🌐 𝗭𝗘𝗩𝗥𝗜𝗖 𝗪𝗘𝗕𝗘𝗜𝗧𝗘 💎\n\n🔗 https://zevricplayx.github.io/eat_token/\n\n👑 @just_zevric 💎",
-        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🌐 𝗢𝗽𝗲𝗻 💎🚀", url="https://zevricplayx.github.io/eat_token/")]])
-    )
-
-# ========== FIXED: FF BAN START ==========
+# ========== FF BAN FUNCTIONS ==========
 async def ff_ban_start(update, context):
     await update.message.reply_text(
         "💀 𝗙𝗙 𝗣𝗘𝗥𝗠𝗔𝗡𝗘𝗡𝗧 𝗕𝗔𝗡 💀\n\n"
@@ -404,8 +357,8 @@ async def ff_ban_token(update, context):
 🌍 𝗥𝗲𝗴𝗶𝗼𝗻: {region}
 📦 𝗩𝗲𝗿𝘀𝗶𝗼𝗻: {version}
 
-⚠️ 𝗬𝗢𝗨 𝗪𝗔𝗡𝗧 𝗞𝗔𝗯𝗔𝗡 (YES)?
-💀 𝟭𝟬𝟬% 𝗣𝗪𝗥𝗠𝗔𝗻𝗘𝗡𝗧 𝗕𝗔𝗡!"""
+⚠️ 𝗬𝗢𝗨 𝗪𝗔𝗡𝗧 𝗞𝗔𝗕𝗔𝗡 (YES)?
+💀 𝟭𝟬𝟬% 𝗣𝗘𝗥𝗠𝗔𝗡𝗘𝗡𝗧 𝗕𝗔𝗡!"""
         
         try:
             await msg.delete()
@@ -471,7 +424,7 @@ async def ff_ban_confirm(update, context):
 𝟭𝟬𝟬% 𝗣𝗘𝗥𝗠𝗔𝗡𝗘𝗡𝗧𝗟𝗬 𝗕𝗔𝗡𝗡𝗘𝗗 💀
 
 👑 @just_zevric
-𝗭𝗘𝗩𝗥𝗜𝗖 𝗬 𝗘𝗱𝗶𝘁𝗶𝗢𝗡"""
+𝗭𝗘𝗩𝗥𝗜𝗖 𝗬 𝗘𝗱𝗶𝘁𝗶𝗼𝗻"""
             
             try:
                 await msg.delete()
@@ -498,11 +451,11 @@ async def ff_ban_confirm(update, context):
     
     return ConversationHandler.END
 
-# ========== FIXED: BAN CHECK START ==========
+# ========== BAN CHECK START ==========
 async def ban_check_start(update, context):
     await update.message.reply_text(
-        "💀 𝗖𝗥𝗢𝗪𝗡𝗭 𝗕𝗔𝗡 𝗖𝗛𝗘𝗖𝗸𝗘𝗥 💀\n\n"
-        "🆔 𝗘𝗻𝘁𝗲𝗿 𝗠𝗙 𝗨𝗜𝗗 🔍💎\n\n"
+        "💀 𝗕𝗔𝗡 𝗖𝗛𝗘𝗖𝗞𝗘𝗥 💀\n\n"
+        "🆔 𝗘𝗻𝘁𝗲𝗿 𝗙𝗙 𝗨𝗜𝗗 🔍💎\n\n"
         "📌 𝗘𝘅𝗮𝗺𝗽𝗹𝗲: 12345678",
         reply_markup=get_main_keyboard()
     )
@@ -566,15 +519,15 @@ async def ban_check_uid(update, context):
                     ban_start = ban_info.get('ban_start_time', 'N/A')
                     txt = f"""💀 𝗕𝗔𝗡 𝗖𝗛𝗘𝗖𝗞𝗘𝗥 💀
 
-🆔 𝗔𝗖𝗜𝗜𝗪𝗬𝗜 𝗣𝗧: {account_id}
-👤 𝗡𝗜𝗖𝗞𝗡𝗔𝗠𝗲: {nickname}
+🆔 𝗔𝗖𝗖𝗢𝗨𝗡𝗧 𝗜𝗗: {account_id}
+👤 𝗡𝗜𝗖𝗞𝗡𝗔𝗠𝗘: {nickname}
 🌍 𝗥𝗘𝗚𝗜𝗢𝗡: {region}
 📊 𝗟𝗩𝗟: {level}
 
-⚠️ 𝗦𝗪𝗩𝗔𝗧𝗨𝗦: 
-💀 𝗣𝗘𝗥𝗠𝗔𝗡𝗘𝗡𝗧𝗟𝗬 𝗕𝗔𝗧𝗢𝗜𝗗 💀
+⚠️ 𝗦𝘁𝗔𝗧𝗨𝗦: 
+💀 𝗣𝗘𝗥𝗠𝗔𝗡𝗘𝗡𝗧𝗟𝗬 𝗕𝗔𝗡𝗡𝗘𝗗 💀
 
-🕐 𝗕𝗔𝗡𝗧𝗘𝗩𝗧: {ban_start}
+🕐 𝗕𝗔𝗡 𝗦𝗧𝗔𝗥𝗧: {ban_start}
 
 👑 @just_zevric"""
                 else:
@@ -585,8 +538,8 @@ async def ban_check_uid(update, context):
 🌍 𝗥𝗘𝗚𝗜𝗢𝗡: {region}
 📊 𝗟𝗘𝗩𝗘𝗟: {level}
 
-✅ 𝗦𝗧𝗔𝗧𝗨𝗦: 𝗖𝗟𝗘𝗔𝗡 ✅
-𝗔𝗰𝗰𝗼𝘂𝗻𝘁 𝗣𝗢𝗧 𝗕𝗔𝗡𝗡𝗘𝗗
+✅ 𝗦𝗧𝗔𝗧𝗨𝗦: 𝗞𝗟𝗘𝗔𝗩 ✅
+𝗔𝗰𝗰𝗼𝘂𝗻𝘁 𝗡𝗢𝗧 𝗕𝗔𝗧𝗧𝗘𝗗
 
 👑 @just_zevric"""
                 
@@ -595,13 +548,13 @@ async def ban_check_uid(update, context):
                 print(f"[BANCHECK] Parse error: {e}")
                 await update.message.reply_text(f"❌ Parse Error!\nUID: {uid}\n@just_zevric", reply_markup=get_main_keyboard())
         else:
-            msg_text = f"""⚠️ 𝗕𝗔𝗡𝗰𝗛𝗘𝗖𝗞 𝗔𝗣𝗜 𝗗𝗢𝗪𝗡 ⚠️
+            msg_text = f"""⚠️ 𝗕𝗔𝗡 𝗖𝗛𝗘𝗖𝗞𝗘𝗥 𝗔𝗣𝗜 𝗗𝗢𝗪𝗡 ⚠️
 
 🆔 𝗨𝗜𝗗: {uid}
 
-💭 𝗖𝗖𝗩𝗧𝗫𝗭 𝗔𝗣𝗜 𝗔𝗧𝗧𝗘𝗠𝗣𝗦 𝗙𝗔𝗜𝗟𝗘𝗕
+💭 𝗔𝗟𝗟 𝗔𝗣𝗜 𝗔𝗧𝗧𝗘𝗠𝗣𝗦 𝗙𝗔𝗜𝗟𝗘𝗗
 
-⏳ 𝗟𝗬𝗩 𝗔𝗣𝗜 𝗖𝗢𝗪𝗜𝗡𝗚 𝗦𝗢𝗢𝗡
+⏳ 𝗦𝗘𝗥𝗩𝗘𝗥 𝗠𝗔𝗧𝗘𝗧𝗡𝗔𝗡𝗖𝗘
 👑 @just_zevric"""
             await update.message.reply_text(msg_text, reply_markup=get_main_keyboard())
     
@@ -615,10 +568,52 @@ async def ban_check_uid(update, context):
     
     return ConversationHandler.END
 
-# ========== OTHER FUNCTIONS (KEEP ALL EXISTING) ==========
+# ========== OTHER FUNCTIONS ==========
+
+async def start(update, context):
+    try:
+        user=update.message.from_user
+        full_name = user.full_name if hasattr(user, 'full_name') else f"{user.first_name} {user.last_name or ''}".strip()
+        if not full_name:
+            full_name = user.first_name or "Zevric"
+        safe_name = full_name[:25].strip()
+        msg = f"""🔥 𝗭𝗘𝗩𝗥𝗜𝗖 — 𝗣𝗥𝗘𝗠𝗜𝗨𝗠 𝗬 𝗘𝗱𝗶𝘁𝗶𝗼𝗻 🔥💎
+
+👋 𝗛𝗲𝘆 {safe_name} ✨ | 𝟭𝟰+ 𝗙𝗲𝗮𝘁𝘂𝗿𝗲𝘀 ✅
+🛡️ 𝗦𝗮𝗳𝗲 • 𝗙𝗮𝘀𝘁 • 𝗢𝗳𝗳𝗶𝗰𝗶𝗮𝗹 ✅
+💀 𝗙𝗙 𝗕𝗔𝗞 𝗪𝗼𝗿𝗸𝗶𝗻𝗴 ✅
+💀 𝗕𝗔𝗡 𝗖𝗛𝗘𝗖𝗞𝗘𝗥 𝗪𝗼𝗿𝗸𝗶𝗻𝗴 ✅
+👑 @just_zevric | 𝗩𝟲𝟴 𝗙𝗜𝗫𝗘𝗗
+
+👇 𝗣𝗹𝗶𝘀 𝗖𝗵𝗼𝗼𝘀𝗲 👇"""
+        await update.message.reply_text(msg, reply_markup=get_main_keyboard())
+    except:
+        await update.message.reply_text("🔥 ZEVRIC PREMIUM FIXED 🔥\nWelcome 💎\n@just_zevric", reply_markup=get_main_keyboard())
+
+async def force_start(update, context):
+    context.user_data.clear()
+    await start(update, context)
+    return ConversationHandler.END
+
+async def owner_info(update, context):
+    msg = """👑 𝗭𝗘𝗩𝗥𝗜𝗖 — 𝗢𝗪𝗡𝗘𝗥 𝗜𝗡𝗙𝗢 👑💎
+
+👤 𝗡𝗮𝗺𝗲 : 𝗭𝗲𝘃𝗿𝗶𝗰 ✨💎
+📱 𝗧𝗲𝗹𝗲𝗴𝗿𝗮𝗺 : @just_zevric 🚀✨
+📺 𝗬𝗢𝗨𝗧𝗨𝗕𝗘 : https://youtube.com/@zevricxplay 🎬🔥
+🌐 𝗠𝗔𝗜𝗡 𝗖𝗛 : @zevric_yt 💎
+
+💖 𝗯𝘆 @just_zevric 😘💖"""
+    await update.message.reply_text(msg, reply_markup=get_main_keyboard())
+
+async def eat_website_info(update, context):
+    await update.message.reply_text(
+        "🌐 𝗭𝗘𝗩𝗥𝗜𝗖 𝗪𝗘𝗕𝗜𝗧𝗘 💎\n\n🔗 https://zevricplayx.github.io/eat_token/\n\n👑 @just_zevric 💎",
+        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🌐 𝗢𝗣𝗘𝗡 💎🚀", url="https://zevricplayx.github.io/eat_token/")]])
+    )
 
 async def check_info_start(update, context):
-    await update.message.reply_text("🔍 𝗕𝗶𝗻𝗱 𝗜𝗻𝗳𝗼 𝗖𝗵𝗲𝗰𝗸 🔍\n\n🔐 Enter Access Token : 💎", reply_markup=get_main_keyboard())
+    await update.message.reply_text("🔍 𝗕𝗶𝗻𝗱 𝗜𝗻𝗙𝗼 𝗖𝗵𝗲𝗖𝗞 🔍\n\n🔐 Enter Access Token : 💎", reply_markup=get_main_keyboard())
     return CHECK_INFO
 
 async def check_info_token(update, context):
@@ -643,7 +638,7 @@ async def check_info_token(update, context):
             return uid,nick,region,r.json()
         uid,nick,region,data=await asyncio.to_thread(fetch)
         email=data.get("email",""); email_to_be=data.get("email_to_be","")
-        txt=f"🔥 𝗭𝗘𝗩𝗥𝗜𝗖 𝗕𝗶𝗻𝗱 𝗜𝗻𝗳𝗼 🔥💎\n\n👤 UID: {uid}\n🎮 Nick: {nick}\n🌍 Region: {region}\n\n📧 Current: {email if email else 'None ❌'}\n⏳ Pending: {email_to_be if email_to_be else 'None ✅'}\n\n💖 @just_zevric ✨"
+        txt=f"🔥 𝗭𝗘𝗩𝗥𝗜𝗖 𝗕𝗶𝗻𝗱 𝗜𝗻𝗙𝗼 🔥💎\n\n👤 UID: {uid}\n🎮 Nick: {nick}\n🌍 Region: {region}\n\n📧 Current: {email if email else 'None ❌'}\n⏳ Pending: {email_to_be if email_to_be else 'None ✅'}\n\n💖 @just_zevric ✨"
         await msg.edit_text(txt)
     except Exception as e:
         await msg.edit_text(f"❌ Error: Token expire 😔")
@@ -667,14 +662,14 @@ async def bind_email_token(update, context):
         current=data.get("email","")
         pending=data.get("email_to_be","")
         if current and current.strip() != "":
-            msg = f"⚠️ 𝗔𝗹𝗿𝗲𝗮𝗱𝘆 𝗕𝗶𝗻𝗱 𝗖 𝗛𝗔𝗜! 📧💎\n\n📧 𝗖𝘂𝗿𝗿𝗲𝗻𝘁 : {current} ✅\n⏳ 𝗣𝗲𝗻𝗱𝗶𝗻𝗴 : {pending if pending else 'None ✅'}\n\n💡 Change Ya Unbind use\n\n💖 @just_zevric"
+            msg = f"⚠️ 𝗔𝗹𝗿𝗲𝗮𝗱𝘆 𝗕𝗶𝗻𝗱 ℅ 𝗛𝗔𝗜! 📧💎\n\n📧 𝗖𝘂𝗿𝗿𝗲𝗻𝘁 : {current} ✅\n⏳ 𝗣𝗲𝗻𝗱𝗶𝗻𝗴 : {pending if pending else 'None ✅'}\n\n💡 Change Ya Unbind use\n\n💖 @just_zevric"
             await update.message.reply_text(msg, reply_markup=get_main_keyboard())
             return ConversationHandler.END
         if pending and pending.strip() != "":
             msg = f"⏳ 𝗣𝗲𝗻𝗱𝗶𝗻𝗴 𝗛𝗔𝗜! ⚠️\n\n📧 Pending: {pending} ⏳\n\n💡 Cancel Karo\n\n💖 @just_zevric"
             await update.message.reply_text(msg, reply_markup=get_main_keyboard())
             return ConversationHandler.END
-        await update.message.reply_text(f"✅ 𝗙𝗿𝗘𝗦𝗛! 🎉\n📧 None ❌\n\n✨ 𝗘𝗻𝘁𝗲𝗿 𝗘𝗺𝗮𝗶𝗹 : 📩")
+        await update.message.reply_text(f"✅ 𝗙𝗥𝗘𝗦𝗛! 🎉\n📧 None ❌\n\n✨ 𝗘𝗻𝘁𝗲𝗿 𝗘𝗺𝗮𝗶𝗹 : 📩")
     except Exception as e:
         await update.message.reply_text(f"✨ 𝗘𝗻𝘁𝗲𝗿 𝗘𝗠𝗔𝗜𝗟 : 📩")
     return BIND_EMAIL
@@ -1014,7 +1009,7 @@ async def unbind_email_confirm(update, context):
     return ConversationHandler.END
 
 async def cancel_bind_start(update, context):
-    await update.message.reply_text("⏱️ 𝗖𝗮𝗻𝗰𝗲𝗹 𝗥𝗲𝗾𝘂𝗲𝗦𝗧 ⏱️\n\n🔐 Token :", reply_markup=get_main_keyboard())
+    await update.message.reply_text("⏱️ 𝗖𝗮𝗻𝗰𝗘𝗹 𝗥𝗲𝗾𝘂𝗘𝘀𝗧 ⏱️\n\n🔐 Token :", reply_markup=get_main_keyboard())
     return CANCEL_TOKEN
 
 async def cancel_bind_token(update, context):
@@ -1102,7 +1097,7 @@ async def eat_to_token_convert(update, context):
     return ConversationHandler.END
 
 async def revoke_token_start(update, context):
-    await update.message.reply_text("🚪 𝗥𝗲𝘃𝗼𝗬𝗲 𝗧𝗼𝗸𝗘𝗡 🚪\n\n🔐 Token :", reply_markup=get_main_keyboard())
+    await update.message.reply_text("🚪 𝗥𝗲𝘃𝗢𝗸𝗘 𝗧𝗼𝗸𝗘𝗡 🚪\n\n🔐 Token :", reply_markup=get_main_keyboard())
     return REVOKE_TOKEN
 
 async def revoke_token_verify(update, context):
@@ -1160,7 +1155,6 @@ async def revoke_token_confirm(update, context):
         await update.message.reply_text(f"❌ Error {e}", reply_markup=get_main_keyboard())
     return ConversationHandler.END
 
-# BIO FUNCTIONS
 COLOR_MAP = {
     "🔴 Red": "[FF0000]",
     "🟢 Green": "[00FF00]",
@@ -1183,7 +1177,7 @@ def get_color_keyboard():
     ], resize_keyboard=True)
 
 async def bio_start(update, context):
-    await update.message.reply_text("📝 𝗨𝗽𝗱𝗮𝘁𝗘 𝗕𝗜𝗞𝗞 🎮💎✨\n\n🔑 𝗧𝗼𝗬𝗘𝗡 💎\n\n💡 Long Bio 300 letters ✨", reply_markup=get_main_keyboard())
+    await update.message.reply_text("📝 𝗨𝗣𝗗𝗔𝗧𝗘 𝗕𝗜𝗢 🎮💎✨\n\n🔑 𝗧𝗼𝗞𝗘𝗡 💎\n\n💡 Max 300 letters ✨", reply_markup=get_main_keyboard())
     return BIO_TOKEN
 
 async def bio_token(update, context):
@@ -1248,7 +1242,6 @@ async def bio_confirm(update, context):
         await update.message.reply_text("Data missing! /start", reply_markup=get_main_keyboard())
         return ConversationHandler.END
     await update.message.reply_text(f"⏳ Updating... 🚀💎\n📝 {bio[:50]} ✨", reply_markup=get_main_keyboard())
-    # Simplified bio update
     try:
         await update.message.reply_text(f"🎉 BIO UPDATE SENT! 🎉💎\n📝 Bio: {bio} 🔥\n✅ Wait 2 min in game! 🚀💎\n👑 @just_zevric", reply_markup=get_main_keyboard())
     except Exception as e:
@@ -1256,7 +1249,7 @@ async def bio_confirm(update, context):
     return ConversationHandler.END
 
 async def resubscribe_start(update, context):
-    await update.message.reply_text("📧 𝗥𝗘𝗦𝗨𝗕𝗦𝗖𝗥𝗜𝗕𝗲 𝗢𝗧𝗣 📧\n\n✉️ 𝗬𝗼𝘂𝗿 𝗘𝗺𝗮𝗶𝗟 💎", reply_markup=get_main_keyboard())
+    await update.message.reply_text("📧 𝗥𝗘𝗦𝗨𝗕𝗕𝗜𝗖𝗥𝗜𝗕𝗘 𝗢𝗧𝗣 📧\n\n✉️ 𝗬𝗢𝗨𝗥 𝗘𝗠𝗔𝗜𝗟 💎", reply_markup=get_main_keyboard())
     return RESUB_EMAIL
 
 async def resubscribe_email(update, context):
