@@ -6,7 +6,29 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKe
 from telegram.ext import Application, CommandHandler, MessageHandler, ConversationHandler, filters, ContextTypes
 import urllib3
 urllib3.disable_warnings()
+# ========== RAILWAY KEEP-ALIVE FIX - Yaha paste karo Line 9 pe ==========
+import threading
 
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "🔥 ZEVRIC V65 Bot Running 💎 - 12 Options Active"
+
+@app.route('/health')
+def health():
+    return "OK", 200
+
+def run_flask():
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host="0.0.0.0", port=port, debug=False)
+
+def keep_alive():
+    t = threading.Thread(target=run_flask, daemon=True)
+    t.start()
+
+keep_alive()
+# ========== FIX END ==========
 try:
     from Crypto.Cipher import AES
     from Crypto.Util.Padding import pad, unpad
