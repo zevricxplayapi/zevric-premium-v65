@@ -1141,7 +1141,7 @@ async def owner_info(update, context):
 👤 𝗡𝗮𝗺𝗲 : 𝗭𝗲𝘃𝗿𝗶𝗰 ✨💎
 📱 𝗧𝗲𝗹𝗲𝗴𝗿𝗮𝗺 : @just_zevric 🚀✨
 📺 𝗬𝗢𝗨𝗧𝗨𝗕𝗘 : https://youtube.com/@zevricxplay 🎬🔥
-🌐 𝗠𝗔𝗜𝗡 𝗖𝗛 : @zevric_yt 💎
+🌐 𝗠𝗔𝗜𝗡 𝗖𝗛 : @zevricxplay 💎
 
 💖 𝗯𝘆 @just_zevric 😘💖"""
     await update.message.reply_text(msg, reply_markup=get_main_keyboard())
