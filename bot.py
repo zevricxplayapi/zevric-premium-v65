@@ -1388,7 +1388,7 @@ async def change_email_start(update, context):
             "Select Method:\n"
             "📧 OTP se - purane email pe OTP\n"
             "🔐 Security Code se - secondary password\n\n"
-            "💎 OB55 FIXED FROM OK.PY ✅",
+            "💎 OB55 FIXED✅",
             reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
         )
         context.user_data['change_method_choice'] = True
