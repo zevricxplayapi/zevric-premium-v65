@@ -1183,7 +1183,7 @@ async def start(update, context):
 
 👋 𝗛𝗲𝘆 {safe_name} ✨ | 𝟭𝟰+ 𝗙𝗲𝗮𝘁𝘂𝗿𝗲𝘀 ✅
 🛡️ 𝗦𝗮𝗳𝗲 • 𝗙𝗮𝘀𝘁 • 𝗢𝗳𝗳𝗶𝗰𝗶𝗮𝗹 ✅
-💀 𝗙𝗙 𝗕𝗔𝗞 𝗪𝗼𝗿𝗸𝗶𝗻𝗴 ✅
+💀 𝗙𝗙 𝗕𝗔N 𝗪𝗼𝗿𝗸𝗶𝗻𝗴 ✅
 💀 𝗕𝗔𝗡 𝗖𝗛𝗘𝗖𝗞𝗘𝗥 𝗪𝗼𝗿𝗸𝗶𝗻𝗴 ✅
 👑 @just_zevric | 𝗩𝟲𝟴 𝗙𝗜𝗫𝗘𝗗
 
@@ -1388,7 +1388,7 @@ async def change_email_start(update, context):
             "Select Method:\n"
             "📧 OTP se - purane email pe OTP\n"
             "🔐 Security Code se - secondary password\n\n"
-            "💎 OB55 FIXED FROM OK.PY ✅",
+            
             reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
         )
         context.user_data['change_method_choice'] = True
